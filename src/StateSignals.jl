@@ -1,4 +1,8 @@
 module StateSignals
+include("Signals.jl")
+
+using .Signals
+export Signal, effect
 
 """
     hi = hello_world()
