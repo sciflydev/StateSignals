@@ -41,14 +41,14 @@ function (s::Signal)()
 end
 
 function pull!(s::Signal)
-    for c in s.children
-        pull!(c)
-    end
-    s.value = s.action()
+    s.valid && return s.value
     s.valid = true
+    s.value = s.action()
+    s.value
 end
 
 function (s::Signal)(value)
+    s.action != nothing && error("Can't modify state of computed signal.");
     invalidate(s)
     s.value = value
     s.valid = true
