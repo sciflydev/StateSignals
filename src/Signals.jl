@@ -41,9 +41,10 @@ function (s::Signal)()
 end
 
 function pull!(s::Signal)
-    s.valid && return s.value
-    s.valid = true
+  if !s.valid
     s.value = s.action()
+    s.valid = true
+  end
     s.value
 end
 

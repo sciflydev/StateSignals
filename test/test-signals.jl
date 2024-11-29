@@ -71,3 +71,21 @@ end
     a(3)
     @test b() == 6
 end
+
+@testset "Circular dependencies" begin
+    a = Signal(1)
+    b = computed(() -> a()+1)
+    c = computed(() -> begin a(2);println(a()); a() + b(); end)
+end
+
+# @testset "Slow state update" begin
+#     a = Signal(1)
+#     b = computed(() -> a() * 2)
+#
+#     @test b() == 2
+#
+#     # Test manual invalidation
+#     invalidate(b)
+#     a(3)
+#     @test b() == 6
+# end
