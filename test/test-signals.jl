@@ -74,8 +74,12 @@ end
 
 @testset "Circular dependencies" begin
     a = Signal(1)
-    b = computed(() -> a()+1)
-    c = computed(() -> begin a(2);println(a()); a() + b(); end)
+    b = computed(() -> a() + 1)
+    c = computed(() -> begin
+        a(2)
+        println(a())
+        a() + b()
+    end)
 end
 
 # @testset "Slow state update" begin
