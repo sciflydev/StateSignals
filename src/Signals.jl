@@ -1,11 +1,12 @@
 module Signals
 
-export Signal, computed, effect, invalidate, pull!
+export Signal, @signal, computed, effect, invalidate, pull!
 export COMPUTED_DEPS
 CONTEXT::Union{Function,Nothing} = nothing
 
 mutable struct Signal{T}
     value::T
+    id::Union{Symbol, Nothing}
     valid::Bool
     action::Union{Function,Nothing}
     children::Set{Signal}
@@ -14,18 +15,36 @@ end
 
 COMPUTED_DEPS::Set{Signal} = Set{Signal}()
 
-Signal(x::Number) = Signal(x, true, nothing, Set{Signal}(), Set{Function}())
-# Signal(f,x) = Signal(x, true, f, Set{Signal}(), Set{Function}())
+Signal(x) = Signal(x, nothing, true, nothing, Set{Signal}(), Set{Function}())
+Signal(x, id::Union{Symbol,Nothing}) = Signal(x, id, true, nothing, Set{Signal}(), Set{Function}())
+Signal(f::Function, id::Union{Symbol,Nothing}=nothing) = Signal(f(), id, true, f, Set{Signal}(), Set{Function}())
 
 function Signal(f::Function)
     Signal(f(), true, f, Set{Signal}(), Set{Function}())
 end
 
+"""
+    @signal var = value
+
+Macro that creates a signal and set its id to the variable name.
+Example: @signal x = 2 expands to x = Signal(2, :x)
+"""
+macro signal(expr)
+    if expr.head != :(=)
+        error("@signal macro expects an assignment expression, e.g., @signal x = 2")
+    end
+
+    var = expr.args[1]
+    val = expr.args[2]
+    return :($(esc(var)) = Signal($(esc(val)), $(QuoteNode(var))))
+end
+
+export @signal
 # x() = s()
-function computed(f::Function)
+function computed(f::Function, id::Union{Symbol,Nothing}=nothing)
     global COMPUTED_DEPS
     COMPUTED_DEPS = Set{Signal}()
-    s = Signal(f)
+    s = Signal(f, id)
     for dependency in COMPUTED_DEPS
         push!(dependency.children, s)
     end
