@@ -2,6 +2,13 @@ module Signals
 
 export Signal, @signal, computed, effect, invalidate, pull!
 export COMPUTED_DEPS
+
+struct Config
+    lazy::Bool
+end
+
+const CONFIG = Config(false)
+
 CONTEXT::Union{Function,Nothing} = nothing
 
 mutable struct Signal{T}
@@ -40,7 +47,7 @@ macro signal(expr)
 end
 
 export @signal
-# x() = s()
+
 function computed(f::Function, id::Union{Symbol,Nothing}=nothing)
     global COMPUTED_DEPS
     COMPUTED_DEPS = Set{Signal}()
@@ -60,7 +67,7 @@ function (s::Signal)()
 end
 
 function pull!(s::Signal)
-    if !s.valid
+    if !s.valid && !(s.action == nothing)
         s.value = s.action()
         s.valid = true
         for fn in s.effects
@@ -75,6 +82,11 @@ function (s::Signal)(value)
     invalidate(s)
     s.value = value
     s.valid = true
+    if !CONFIG.lazy
+        for c in s.children
+            pull!(c)
+        end
+    end
     for fn in s.effects
         fn()
     end
