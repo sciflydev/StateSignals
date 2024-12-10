@@ -10,6 +10,7 @@ This package implements a reactive graph-based state management system where val
 - **Effect**: callback that run when its dependent signals change.
 
 Simple example:
+
 ```julia
 using StateSignals
 x = Signal(1)
@@ -17,7 +18,5 @@ y = Signal(2)
 z = computed(() -> x() + y())  # z is 3
 effect(() -> println("Sum changed to: ", z()))
 
-x(5)
-z() # Prints "Sum changed to: 7"
+x(5) # Prints "Sum changed to: 7"
 ```
-Note that, as of now, a signal's value is only updated when calling its getter. Similarly, effects are called when the signal's value is retrieved.
