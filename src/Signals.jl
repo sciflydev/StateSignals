@@ -26,10 +26,6 @@ Signal(x) = Signal(x, nothing, true, nothing, Set{Signal}(), Set{Function}())
 Signal(x, id::Union{Symbol,Nothing}) = Signal(x, id, true, nothing, Set{Signal}(), Set{Function}())
 Signal(f::Function, id::Union{Symbol,Nothing}=nothing) = Signal(f(), id, true, f, Set{Signal}(), Set{Function}())
 
-function Signal(f::Function)
-    Signal(f(), true, f, Set{Signal}(), Set{Function}())
-end
-
 """
     @signal var = value
 
