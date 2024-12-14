@@ -67,7 +67,7 @@ function pull!(s::Signal)
         s.value = s.action()
         s.valid = true
         for fn in s.effects
-            fn()
+            @async fn()
         end
     end
     s.value
@@ -84,11 +84,12 @@ function (s::Signal)(value)
         end
     end
     for fn in s.effects
-        fn()
+        @async fn()
     end
     value
 end
 
+# the first run is syncrhonous to capture the signals called in the effect function
 function effect(fn::Function)
     global CONTEXT
     CONTEXT = fn
