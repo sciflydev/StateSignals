@@ -44,6 +44,7 @@ end
     @test tracked_value[] == 1  # Initial effect run
 
     s(2)  # Should trigger effect
+    sleep(0.1)
     @test tracked_value[] == 2
 end
 
