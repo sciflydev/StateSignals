@@ -20,3 +20,17 @@ effect(() -> println("Sum changed to: ", z()))
 
 x(5) # Prints "Sum changed to: 7"
 ```
+
+Using resources for long computations:
+
+```julia
+using StateSignals
+
+s = Signal(0)
+r = Resource([s]) do
+    sleep(3)
+    println("Resource acquired")
+    s()*3
+end
+s(3)
+```
