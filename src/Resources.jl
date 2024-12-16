@@ -12,9 +12,9 @@ struct Resource
 end
 
 function Resource(loader::Function, sources::Vector{<:Signal}, id = :none)
-    value = Signal(nothing)
-    isloading = Signal(false)
-    error = Signal(nothing)
+    value = Signal(nothing, Symbol("$id"*"_value"))
+    isloading = Signal(false, Symbol("$id"*"_value"))
+    error = Signal(nothing, Symbol("$id"*"_value"))
 
     resource = Resource(id, value, loader, isloading, sources, error)
 

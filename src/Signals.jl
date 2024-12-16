@@ -22,9 +22,9 @@ end
 
 COMPUTED_DEPS::Set{Signal} = Set{Signal}()
 
-Signal(x) = Signal(x, nothing, true, nothing, Set{Signal}(), Set{Function}())
+Signal(x::Any, id=:none) = Signal(x, id, true, nothing, Set{Signal}(), Set{Function}())
 Signal(::Nothing) = Signal{Union{Any,Nothing}}(nothing, nothing, true, nothing, Set{Signal}(), Set{Function}())
-Signal(x, id::Union{Symbol,Nothing}) = Signal(x, id, true, nothing, Set{Signal}(), Set{Function}())
+Signal(::Nothing, id=Symbol) = Signal{Union{Any,Nothing}}(nothing, nothing, true, nothing, Set{Signal}(), Set{Function}())
 Signal(f::Function, id::Union{Symbol,Nothing}=nothing) = Signal(f(), id, true, f, Set{Signal}(), Set{Function}())
 
 """
